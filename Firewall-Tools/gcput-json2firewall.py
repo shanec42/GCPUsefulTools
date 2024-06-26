@@ -153,7 +153,6 @@ def create_firewall_rules( config_file):
 
     print("")
 
-    #return
 
 
 
