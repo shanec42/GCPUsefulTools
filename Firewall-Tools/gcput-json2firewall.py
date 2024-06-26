@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+# vim: set ft=py ts=2 expandtab
+#
+# Input: json file containing firewall rules
+# ie: gcloud compute firewall-rules list --project=<PROJECT> --format=json 
+# Expected output: Firewall rule created acknowledgement
+#
+
+import sys
+import json
+import argparse
+
+def create_firewall_rules( config_file):
+#  json_file= [json_line for json_line in config_file]
+#  print( json_file)
+  firewall_data= json.load( config_file)
+
+  for rule in firewall_data:
+    #print( rule)
+
+    # gcloud compute firewall-rules create NAME
+    print( f"gcloud compute firewall-rules create {rule['name']}", end=' ');
+
+    # [--description=DESCRIPTION]
+    print( f"--description='{rule['description']}'", end=' ')
+
+    # [--direction=DIRECTION]
+    print( f"--direction='{rule['direction']}'", end=' ')
+
+    # [--priority=PRIORITY]
+    print( f"--priority='{rule['priority']}'", end=' ')
+
+    # [--network=NETWORK; default="default"]
+    print( f"--network='{rule['network']}'", end=' ')
+
+    # [--disabled]
+    try:
+      if( rule['disabled'] == 'True'):
+        print( f"--disabled", end=' ')
+    except:
+      print( "", end='')
+
+    # [ --[no-]enable-logging] [--logging-metadata=LOGGING_METADATA] ]
+    try:
+      if( rule[ 'logConfig']['enable'] == 'True'):
+        print( f"--enable-logging", end=' ')
+    except:
+      print( "", end='')
+
+    # [--destination-ranges=CIDR_RANGE,[CIDR_RANGE,…]]
+    try:
+      if rule['destinationRanges']:
+        ranges=[]
+        for dest_cidr in rule['destinationRanges']:
+          ranges.append( f"{dest_cidr}")
+        all_ranges= ','.join( ranges).replace( ",$", "")
+        print( f"--destination-ranges='{all_ranges}'", end=' ')
+    except:
+      print( "", end='')
+
+    # [--source-ranges=CIDR_RANGE,[CIDR_RANGE,…]]
+    try:
+      if rule['sourceRanges']:
+        ranges=[]
+        for source_cidr in rule['sourceRanges']:
+          ranges.append( f"{source_cidr}")
+        all_ranges= ','.join( ranges).replace( ",$", "")
+        print( f"--source-ranges='{all_ranges}'", end=' ')
+    except:
+      print( "", end='')
+
+    # [--source-service-accounts=EMAIL,[EMAIL,…]]
+    try:
+      if rule['sourceServiceAccounts']:
+        emails=[]
+        for source_email in rule['sourceServiceAccounts']:
+          emails.append( f"{source_email}")
+        all_emails= ','.join( emails).replace( ",$", "")
+        print( f"--source-service-accounts='{all_emails}'", end=' ')
+    except:
+      print( "", end='')
+
+    # [--target-service-accounts=EMAIL,[EMAIL,…]]
+    try:
+      if rule['targetServiceAccounts']:
+        emails=[]
+        for target_email in rule['targetServiceAccounts']:
+          emails.append( f"{target_email}")
+        all_emails= ','.join( emails).replace( ",$", "")
+        print( f"--target-service-accounts='{all_emails}'", end=' ')
+    except:
+      print( "", end='')
+
+    # [--source-tags=EMAIL,[EMAIL,…]]
+    try:
+      if rule['sourceTags']:
+        tags=[]
+        for source_tag in rule['sourceTags']:
+          tags.append( f"{source_tag}")
+        all_tags= ','.join( tags).replace( ",$", "")
+        print( f"--source-tags='{all_tags}'", end=' ')
+    except:
+      print( "", end='')
+
+    # [--target-tags=EMAIL,[EMAIL,…]]
+    try:
+      if rule['targetTags']:
+        tags=[]
+        for target_tag in rule['targetTags']:
+          tags.append( f"{target_tag}")
+        all_tags= ','.join( tags).replace( ",$", "")
+        print( f"--target-tags='{all_tags}'", end=' ')
+    except:
+      print( "", end='')
+
+
+    # [ --action=ALLOW --rules=PROTOCOL[:PORT[-PORT]],[…]]
+    try:
+      if rule['allowed']:
+        print( f"--acction='ALLOW'", end=' ')
+        rules=[]
+        for allowed in rule['allowed']:
+          if( allowed['IPProtocol'] == 'tcp' or allowed['IPProtocol'] == 'udp'):
+            for port in allowed['ports']:
+              rules.append( f"{allowed['IPProtocol']}:{port}")
+          else:
+              rules.append( f"{allowed['IPProtocol']}")
+        all_rules= ','.join( rules).replace( ",$", "")
+        print( f"--rules='{all_rules}'", end=' ')
+    except:
+      print( "", end='')
+
+    # [ --action=DENY --rules=PROTOCOL[:PORT[-PORT]],[…]]
+    try:
+      if rule['denied']:
+        print( f"--acction='DENY'", end=' ')
+        rules=[]
+        for denied in rule['denied']:
+          if( denied['IPProtocol'] == 'tcp' or denied['IPProtocol'] == 'udp'):
+            for port in denied['ports']:
+              rules.append( f"{denied['IPProtocol']}:{port}")
+          else:
+              rules.append( f"{denied['IPProtocol']}")
+        all_rules= ','.join( rules).replace( ",$", "")
+        print( f"--rules='{all_rules}'", end=' ')
+    except:
+      print( "", end='')
+
+    print("")
+
+    #return
+
+
+
+def main():
+  argParser= argparse.ArgumentParser( prog='gcp-firewall-recreate-from-json.py',
+    description='Read exported GCP firewall rules in json file format, and recreate them.')
+
+  # Import JSON files
+  argParser.add_argument(  'firewall_json_config_file',
+    help='JSON file containing Firewall rules to be recreated',
+    type=argparse.FileType('r'), nargs='*', default=[sys.stdin])
+
+  args= argParser.parse_args()
+
+  for firewall_config in args.firewall_json_config_file:
+    create_firewall_rules( firewall_config)
+
+if __name__ == '__main__':
+  main()
