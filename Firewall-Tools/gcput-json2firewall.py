@@ -3,7 +3,12 @@
 #
 # Input: json file containing firewall rules
 # ie: gcloud compute firewall-rules list --project=<PROJECT> --format=json 
-# Expected output: Firewall rule created acknowledgement
+# Expected output: gcloud compute firewall-rules create commands
+# ie: gcloud compute firewall-rules create onprem-to-gcp --description='Onprem access to GCP' \
+#     --direction='INGRESS' --priority='1000' \
+#     --network='https://www.googleapis.com/compute/v1/projects/gcp-project/global/networks/gcp-network' \
+#     --destination-ranges='10.10.10.0/24,10.10.11.0/24' --source-ranges='10.1.1.0/24,10.1.2.0/24' \
+#     --acction='ALLOW' --rules='all'
 #
 
 import sys
