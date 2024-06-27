@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # vim: set ft=py ts=2 expandtab
 #
+# SPDX-FileCopyrightText: 2024 Shane Chambers <license@AustinLinux.com>
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
 # Input: json file containing firewall rules
 # ie: gcloud compute firewall-rules list --project=<PROJECT> --format=json 
 # Expected output: gcloud compute firewall-rules create commands
@@ -9,6 +12,7 @@
 #     --network='https://www.googleapis.com/compute/v1/projects/gcp-project/global/networks/gcp-network' \
 #     --destination-ranges='10.10.10.0/24,10.10.11.0/24' --source-ranges='10.1.1.0/24,10.1.2.0/24' \
 #     --acction='ALLOW' --rules='all'
+#
 #
 
 import sys
