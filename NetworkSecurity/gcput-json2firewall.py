@@ -142,7 +142,7 @@ def create_firewall_rules( config_file):
     # [ --action=DENY --rules=PROTOCOL[:PORT[-PORT]],[…]]
     try:
       if rule['denied']:
-        print( f"--acction='DENY'", end=' ')
+        print( f"--action='DENY'", end=' ')
         rules=[]
         for denied in rule['denied']:
           if( denied['IPProtocol'] == 'tcp' or denied['IPProtocol'] == 'udp'):
@@ -161,8 +161,9 @@ def create_firewall_rules( config_file):
 
 
 def main():
-  argParser= argparse.ArgumentParser( prog='gcp-firewall-recreate-from-json.py',
-    description='Read exported GCP firewall rules in json file format, and recreate them.')
+  argParser= argparse.ArgumentParser( prog='gcput-json2firewall.py',
+    description='Read exported GCP firewall rules in json format,'\
+                'and print gcloud commands needed to recreate the rules.')
 
   # Import JSON files
   argParser.add_argument(  'firewall_json_config_file',
