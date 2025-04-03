@@ -152,6 +152,8 @@ then
 		echo "Please contact your Google Cloud partner for additional support." 1>&2
 		exit 5
 	fi
+
+	echo -e "\n\n"
 fi
 echo -e "Organization: ${bold}${ORGANIZATION}${reset}\nOrganization ID#: ${bold}${ORGANIZATION_ID}${reset}"
 okquit 'Does this look correct?'
