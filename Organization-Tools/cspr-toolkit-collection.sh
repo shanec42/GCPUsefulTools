@@ -121,7 +121,8 @@ if [ "$( echo $ORGANIZATION_ID | wc -w)" -gt 1 ]
 then
 	EXITERROR=0
 
-	echo "ERROR: Multiple Organizations aren't supported yet!" 1>&2
+	echo "Looks like you have access to multiple organizations." 1>&2
+	echo "ERROR: Multiple Organizations aren't supported automatically yet!" 1>&2
 	read -p "Would you like to specify your Organization, and ID? (yN): " specifyorg
 	if [[ "${specifyorg,,}" =~ ^(y) ]]
 	then
