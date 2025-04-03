@@ -260,6 +260,22 @@ ACCESS_POLICY_JOB=$( gcloud asset export --billing-project ${BQ_PROJECT_NAME} \
      --output-bigquery-force 2>&1)
 ACCESS_POLICY_JOB_ID=$( echo ${ACCESS_POLICY_JOB} | perl -ne '($jobid)=( $_ =~ /describe ([^\]]+)\]/); print "$jobid\n"')
 
+# OS-Inventory export to BigQuery
+OS_INVENTORY_JOB=$( gcloud asset export --billing-project ${BQ_PROJECT_NAME} \
+     --content-type os-inventory \
+     --organization  ${ORGANIZATION_ID} \
+     --bigquery-table projects/${BQ_PROJECT_NAME}/datasets/${BQDATASET_CAI}/tables/access_policy \
+     --output-bigquery-force 2>&1)
+OS_INVENTORY_JOB_ID=$( echo ${ACCESS_POLICY_JOB} | perl -ne '($jobid)=( $_ =~ /describe ([^\]]+)\]/); print "$jobid\n"')
+
+# Relationship export to BigQuery
+RELATIONSHIP_JOB=$( gcloud asset export --billing-project ${BQ_PROJECT_NAME} \
+     --content-type relationship \
+     --organization  ${ORGANIZATION_ID} \
+     --bigquery-table projects/${BQ_PROJECT_NAME}/datasets/${BQDATASET_CAI}/tables/access_policy \
+     --output-bigquery-force 2>&1)
+RELATIONSHIP_JOB_ID=$( echo ${ACCESS_POLICY_JOB} | perl -ne '($jobid)=( $_ =~ /describe ([^\]]+)\]/); print "$jobid\n"')
+
 # Monitor jobs to finish
 
 RESOURCE_JOB_STATUS=0
@@ -270,7 +286,7 @@ donecount=0
 export_cycle=0
 cyclesleep=2
 verbose_working=1
-while [ "${donecount}" -lt 4 ]
+while [ "${donecount}" -lt 6 ]
 do
 	width=$( tput cols); ((width=${width}-2))
 	# Resource Export
@@ -357,13 +373,59 @@ do
 		echo "${bold}Done${reset}"
 	fi
 
+
+	# OS-Inventory Export
+	echo -e "${eraseline}OS-Inventory export...\c"
+	if [ "${OS_INVENTORY_JOB_STATUS}" = 0 ]
+	then
+		OS_INVENTORY_JOB_STATUS=$( gcloud asset operations describe ${OS_INVENTORY_JOB_ID} | egrep -c '^done: true')
+		if [ "${OS_INVENTORY_JOB_STATUS}" = 0 ]
+		then
+			if [ "${verbose_working}" = 0 ] ||\
+			   [ "$(echo -e "Working \t ${OS_INVENTORY_JOB_ID}" | wc -c)" -ge ${width} ]
+			then
+				echo -e "Working..."
+			else
+				echo -e "Working \t ${OS_INVENTORY_JOB_ID}"
+			fi
+		else
+			echo "${bold}Done${reset}"
+		fi
+	else
+		echo "${bold}Done${reset}"
+	fi
+
+
+	# ACCESS Export
+	echo -e "${eraseline}Access Policy export...\c"
+	if [ "${RELATIONSHIP_JOB_STATUS}" = 0 ]
+	then
+		RELATIONSHIP_JOB_STATUS=$( gcloud asset operations describe ${RELATIONSHIP_JOB_ID} | egrep -c '^done: true')
+		if [ "${RELATIONSHIP_JOB_STATUS}" = 0 ]
+		then
+			if [ "${verbose_working}" = 0 ] ||\
+			   [ "$(echo -e "Working \t ${RELATIONSHIP_JOB_ID}" | wc -c)" -ge ${width} ]
+			then
+				echo -e "Working..."
+			else
+				echo -e "Working \t ${RELATIONSHIP_JOB_ID}"
+			fi
+		else
+			echo "${bold}Done${reset}"
+		fi
+	else
+		echo "${bold}Done${reset}"
+	fi
+
+
+
 	# Count the successfully completed jobs
-	(( donecount= ${RESOURCE_JOB_STATUS} + ${IAM_JOB_STATUS} + ${ORG_JOB_STATUS} + ${ACCESS_JOB_STATUS} ))
-	if [ "${donecount}" -lt 4 ]
+	(( donecount= ${RESOURCE_JOB_STATUS} + ${IAM_JOB_STATUS} + ${ORG_JOB_STATUS} + ${ACCESS_JOB_STATUS} + ${OS_INVENTORY_JOB_STATUS} + ${RELATIONSHIP_JOB_STATUS} ))
+	if [ "${donecount}" -lt 6 ]
 	then
 		sleep ${cyclesleep}
 		# Move cursor up five rows
-		echo "${moveuponeline}${moveuponeline}${moveuponeline}${moveuponeline}${moveuponeline}"
+		echo "${moveuponeline}${moveuponeline}${moveuponeline}${moveuponeline}${moveuponeline}${moveuponeline}${moveuponeline}"
 	fi
 
 	# Count the cycles
