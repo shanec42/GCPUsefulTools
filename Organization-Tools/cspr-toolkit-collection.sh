@@ -5,6 +5,17 @@
 # data collection.
 #
 
+# Verify Bash compatability version
+BASH_MAJOR_MINOR=$( echo $BASH_VERSION | cut -d. -f1-2 )
+if (( $( echo "$BASH_MAJOR_MINOR < 5.0" | bc -l) ))
+then
+		(
+		echo "Minimum version of bash required: 5.0"
+		echo "Please update your bash version, or try from another system."
+		) 1>&2
+		exit 1
+fi
+
 
 # Functions:
 function okquit() {
@@ -18,7 +29,7 @@ function okquit() {
 		else
 			echo -e "\nAborted.  Please contact your cloud administrator if you have questions."
 		fi
-		exit 1
+		exit 2
 	else
 		echo
 		echo
@@ -34,7 +45,7 @@ function exitsteps() {
 		gcloud config unset project >/dev/null 2>&1
 	fi
 
-	exit 2
+	exit 3
 
 }
 
@@ -109,7 +120,7 @@ ORGANIZATION_ID=$(gcloud organizations list --format="value(ID)")
 if [ "$( echo $ORGANIZATION_ID | wc -l)" -gt 1 ]
 then
 	echo "ERROR: Multiple Organizations aren't supported yet!" 1>&2
-	exit
+	exit 4
 fi
 echo -e "Organization: ${bold}${ORGANIZATION}${reset}\nOrganization ID#: ${bold}${ORGANIZATION_ID}${reset}"
 okquit 'Does this look correct?'
