@@ -120,7 +120,7 @@ ORGANIZATION_ID=$(gcloud organizations list --format="value(ID)")
 if [ "$( echo $ORGANIZATION_ID | wc -w)" -gt 1 ]
 then
 	echo "ERROR: Multiple Organizations aren't supported yet!" 1>&2
-	read -p "Would you like to specify your Organization, and ID? (yN)" specifyorg
+	read -p "Would you like to specify your Organization, and ID? (yN): " specifyorg
 	if [[ "${specifyorg,,}" =~ ^(y) ]]
 	then
 		gcloud organizations list --format="[box]"
