@@ -202,7 +202,7 @@ BQ_PROJECT_ID=$(gcloud projects describe ${BQ_PROJECT_NAME} --format "value(proj
 
 
 # Storage Bucket
-read -p "Will you be exporting this data to a Storage Bucket for sharing with your Google Cloud partner? (yN)" bucket_question
+read -p "Will you be exporting this data to a Storage Bucket for sharing with your Google Cloud partner? (yN) " bucket_question
 if [[ "${bucket_question,,}" =~ ^(y) ]]
 then
 	BUCKET_EXPORT=$( echo "${ORGANIZATION}-cspr-$(date '+%Y%m%d')-$(tr -dc 'a-z' </dev/random | fold -w 5  | head  -1)" | sed -e 's/\./_/g')
