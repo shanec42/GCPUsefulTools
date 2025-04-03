@@ -126,7 +126,7 @@ then
 	read -p "Would you like to specify your Organization, and ID? (yN): " specifyorg
 	if [[ "${specifyorg,,}" =~ ^(y) ]]
 	then
-		gcloud organizations list --format="[box]"
+			gcloud organizations list --format="table[box](DISPLAY_NAME,ID)"
 		read -p "Organization Display Name: " ORGANIZATION
 		read -p "Organization ID: " ORGANIZATION_ID
 	else
