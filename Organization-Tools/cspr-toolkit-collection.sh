@@ -117,10 +117,26 @@ okquit 'Does this look correct, and does this user have the above permissions?' 
 # Org Discovery
 ORGANIZATION=$(gcloud organizations list --format="value(DISPLAY_NAME)")
 ORGANIZATION_ID=$(gcloud organizations list --format="value(ID)")
-if [ "$( echo $ORGANIZATION_ID | wc -l)" -gt 1 ]
+if [ "$( echo $ORGANIZATION_ID | wc -w)" -gt 1 ]
 then
 	echo "ERROR: Multiple Organizations aren't supported yet!" 1>&2
-	exit 4
+	read -p "Would you like to specify your Organization, and ID? (yN)" specifyorg
+	if [[ "${specifyorg,,}" =~ ^(y) ]]
+	then
+		gcloud organizations list --format="[box]"
+		read -p "Organization Display Name: " ORGANIZATION
+		read -p "Organization ID: " ORGANIZATION_ID
+	else
+		exit 4
+	fi
+
+	ORG_INPUT_CHECK=$(gcloud organizations describe ${ORGANIZATION_ID} --format="value(displayName)")
+	if [ "${ORGANIZATION}" != "${ORG_INPUT_CHECK}" ]
+	then
+		echo "The Organization and Organization ID you entered do not match" 1>&2
+		echo "Please contact your Google Cloud partner for additional support." 1>&2
+		exit 5
+	fi
 fi
 echo -e "Organization: ${bold}${ORGANIZATION}${reset}\nOrganization ID#: ${bold}${ORGANIZATION_ID}${reset}"
 okquit 'Does this look correct?'
