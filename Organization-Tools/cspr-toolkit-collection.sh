@@ -119,6 +119,8 @@ ORGANIZATION=$(gcloud organizations list --format="value(DISPLAY_NAME)")
 ORGANIZATION_ID=$(gcloud organizations list --format="value(ID)")
 if [ "$( echo $ORGANIZATION_ID | wc -w)" -gt 1 ]
 then
+	EXITERROR=0
+
 	echo "ERROR: Multiple Organizations aren't supported yet!" 1>&2
 	read -p "Would you like to specify your Organization, and ID? (yN): " specifyorg
 	if [[ "${specifyorg,,}" =~ ^(y) ]]
@@ -127,11 +129,23 @@ then
 		read -p "Organization Display Name: " ORGANIZATION
 		read -p "Organization ID: " ORGANIZATION_ID
 	else
-		exit 4
+		EXITERROR=1
 	fi
 
-	ORG_INPUT_CHECK=$(gcloud organizations describe ${ORGANIZATION_ID} --format="value(displayName)")
+	if [ "${ORGANIZATION}" = '' ] && [ "${ORGANIZATION_ID}" = '' ]
+	then
+		EXITERROR=1
+	else
+		ORG_INPUT_CHECK=$(gcloud organizations describe ${ORGANIZATION_ID} --format="value(displayName)")
+	fi
+
+
 	if [ "${ORGANIZATION}" != "${ORG_INPUT_CHECK}" ]
+	then
+		EXITERROR=1
+	fi
+
+	if [ "${EXITERROR}" = 1 ]
 	then
 		echo "The Organization and Organization ID you entered do not match" 1>&2
 		echo "Please contact your Google Cloud partner for additional support." 1>&2
