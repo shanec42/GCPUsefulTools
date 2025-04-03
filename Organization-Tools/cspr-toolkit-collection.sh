@@ -5,17 +5,6 @@
 # data collection.
 #
 
-# 2023/09/25 - v0.1.0 :   Creation
-# 2023/09/27 - v0.2.0 :   Add the ability to exit after export to BigQuery without exporting to a storage bucket
-#                     +   Clean up some exit verbage.
-#                     +   Added Intro and user permissions verbage.
-# 2023/09/27 - v0.2.1 :   Added "export TERM=screen" and limited BQ_PROJECT_NAME to 30 chars
-#                     +   Changed "Project ID#" to "Project Number" in review.
-#                     +   Added exit to exitsteps
-#                     +   Changed the status "Working" lines to not show the job id if the width won't fit
-#                     +   Format change on "create project for you" read line
-# 2024/02/08 - v0.2.2 :   Added check for multiple organizations (need to add support for that feature)
-#                     +   Added '--organization=' to gcloud project create line
 
 # Functions:
 function okquit() {
