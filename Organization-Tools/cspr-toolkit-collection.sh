@@ -177,7 +177,7 @@ then
 	
 	# Billing Information
 	BILLING_ACCOUNT=$( gcloud beta billing accounts list --format "value(ACCOUNT_ID)")
-	BQ_PROJECT_NAME="$( echo ${ORGANIZATION}-cspr- | sed -e 's/\./-/g')$(tr -dc 'a-z' </dev/random | fold -w 5  | head  -1)"
+	BQ_PROJECT_NAME="$( echo ${ORGANIZATION}-cspr-$(LC_ALL=C tr -dc 'a-z' </dev/random | fold -w 5  | head  -1) | sed -e 's/\./_/g')"
 	BQ_PROJECT_NAME="$( echo ${BQ_PROJECT_NAME} | cut -c 1-30)"
 	echo 
 	echo -e "Project name: ${bold}${BQ_PROJECT_NAME}${reset}"
@@ -205,7 +205,7 @@ BQ_PROJECT_ID=$(gcloud projects describe ${BQ_PROJECT_NAME} --format "value(proj
 read -p "Will you be exporting this data to a Storage Bucket for sharing with your Google Cloud partner? (yN) " bucket_question
 if [[ "${bucket_question,,}" =~ ^(y) ]]
 then
-	BUCKET_EXPORT=$( echo "${ORGANIZATION}-cspr-$(date '+%Y%m%d')-$(tr -dc 'a-z' </dev/random | fold -w 5  | head  -1)" | sed -e 's/\./_/g')
+	BUCKET_EXPORT=$( echo "${ORGANIZATION}-cspr-$(date '+%Y%m%d')-$(LC_ALL=C tr -dc 'a-z' </dev/random | fold -w 5  | head  -1)" | sed -e 's/\./_/g')
 else
 	BUCKET_EXPORT='<Export Disabled>'
 fi
