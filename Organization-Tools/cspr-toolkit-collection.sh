@@ -279,8 +279,6 @@ gcloud projects add-iam-policy-binding ${BQ_PROJECT_NAME} --member \
 
 # Resources Export to BigQuery
 # todo: capture error, and fail gracefully
-echo -e "\n\n"
-echo -e "Exporting data...\n(this may take a few minutes with some processes running much longer than others)\n\n"
 RESOURCE_JOB=$( gcloud asset export --billing-project ${BQ_PROJECT_NAME} \
      --content-type resource \
      --organization  ${ORGANIZATION_ID} \
@@ -341,6 +339,8 @@ donecount=0
 export_cycle=0
 cyclesleep=2
 verbose_working=1
+echo -e "\n\n"
+echo -e "Exporting data...\n(this may take a few minutes with some processes running much longer than others)\n\n"
 while [ "${donecount}" -lt 6 ]
 do
 	width=$( tput cols); ((width=${width}-2))
