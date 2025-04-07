@@ -280,6 +280,7 @@ gcloud projects add-iam-policy-binding ${BQ_PROJECT_NAME} --member \
 # Resources Export to BigQuery
 # todo: capture error, and fail gracefully
 echo -e "\n\n"
+echo -e "Exporting data...\n(this may take a few minutes with some processes running much longer than others)\n\n"
 RESOURCE_JOB=$( gcloud asset export --billing-project ${BQ_PROJECT_NAME} \
      --content-type resource \
      --organization  ${ORGANIZATION_ID} \
