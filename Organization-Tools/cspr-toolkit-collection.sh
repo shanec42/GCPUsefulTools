@@ -118,7 +118,7 @@ okquit 'Does this look correct, and does this user have the above permissions?' 
 ORGANIZATION=$(gcloud organizations list --format="value(DISPLAY_NAME)" 2>&1)
 ORGANIZATION_ID=$(gcloud organizations list --format="value(ID)" 2>&1)
 
-if [[ "${ORGANIZATION} == "*Reauthentication*" -o "${ORGANIZATION} == "ERROR:*" -o "${ORGANIZATION_ID} == "*Reauthentication*" -o "${ORGANIZATION_ID} == "ERROR:*" ]]
+if [[ "${ORGANIZATION}" == *Reauthentication* || "${ORGANIZATION}" == ERROR:* || "${ORGANIZATION_ID}" == *Reauthentication* || "${ORGANIZATION_ID}" == ERROR:* ]]
 then
 	echo "Please authenticate your gcloud access and restart this script." 1>&2
 	echo -e "\n\t $ gcloud auth login\n" 1>&2
