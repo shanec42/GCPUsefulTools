@@ -130,16 +130,10 @@ then
 	EXITERROR=0
 
 	echo "Looks like you have access to multiple organizations." 1>&2
-	echo "ERROR: Multiple Organizations aren't supported automatically yet!" 1>&2
-	read -p "Would you like to specify your Organization, and ID? (yN): " specifyorg
-	if [[ "${specifyorg,,}" =~ ^(y) ]]
-	then
-			gcloud organizations list --format="table[box](DISPLAY_NAME,ID)"
-		read -p "Organization Display Name: " ORGANIZATION
-		read -p "Organization ID: " ORGANIZATION_ID
-	else
-		EXITERROR=1
-	fi
+	echo "Please specify your Organization, and ID."
+	gcloud organizations list --format="table[box](DISPLAY_NAME,ID)"
+	read -p "Organization Display Name: " ORGANIZATION
+	read -p "Organization ID: " ORGANIZATION_ID
 
 	if [ "${ORGANIZATION}" = '' ] && [ "${ORGANIZATION_ID}" = '' ]
 	then
