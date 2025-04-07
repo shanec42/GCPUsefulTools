@@ -50,7 +50,6 @@ function exitsteps() {
 }
 
 # Terminal Commands
-export TERM=screen
 bold=$( tput bold)
 reset=$( tput sgr0)
 moveuponeline=$( tput cuu1)
