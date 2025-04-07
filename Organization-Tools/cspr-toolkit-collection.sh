@@ -115,8 +115,17 @@ okquit 'Does this look correct, and does this user have the above permissions?' 
 
 
 # Org Discovery
-ORGANIZATION=$(gcloud organizations list --format="value(DISPLAY_NAME)")
-ORGANIZATION_ID=$(gcloud organizations list --format="value(ID)")
+ORGANIZATION=$(gcloud organizations list --format="value(DISPLAY_NAME)" 2>&1)
+ORGANIZATION_ID=$(gcloud organizations list --format="value(ID)" 2>&1)
+
+if [[ "${ORGANIZATION} == "*Reauthentication*" -o "${ORGANIZATION} == "ERROR:*" -o "${ORGANIZATION_ID} == "*Reauthentication*" -o "${ORGANIZATION_ID} == "ERROR:*" ]]
+then
+	echo "Please authenticate your gcloud access and restart this script." 1>&2
+	echo -e "\n\t $ gcloud auth login\n" 1>&2
+	exit 4
+fi
+
+
 if [ "$( echo $ORGANIZATION_ID | wc -w)" -gt 1 ]
 then
 	EXITERROR=0
@@ -326,6 +335,8 @@ RESOURCE_JOB_STATUS=0
 IAM_JOB_STATUS=0
 ORG_JOB_STATUS=0
 ACCESS_JOB_STATUS=0
+OS_INVENTORY_JOB_STATUS=0
+RELATIONSHIP_JOB_STATUS=0
 donecount=0
 export_cycle=0
 cyclesleep=2
@@ -440,8 +451,8 @@ do
 	fi
 
 
-	# ACCESS Export
-	echo -e "${eraseline}Access Policy export...\c"
+	# Relationship Export
+	echo -e "${eraseline}Relationship export...\c"
 	if [ "${RELATIONSHIP_JOB_STATUS}" = 0 ]
 	then
 		RELATIONSHIP_JOB_STATUS=$( gcloud asset operations describe ${RELATIONSHIP_JOB_ID} | egrep -c '^done: true')
